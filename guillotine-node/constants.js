@@ -24,9 +24,9 @@ const constants = {
   ]
 }
 
-priceList.default = priceList[0];
-availableModules
+constants.priceList.default = constants.priceList[0];
+constants.availableModules
   .map(x=>x)
-  .forEach(el=> availableModules[el]={ some: 'config-data' });
+  .forEach(el=> constants.availableModules[el]={ some: 'config-data' });
 
 export { constants };

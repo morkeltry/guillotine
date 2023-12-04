@@ -10,6 +10,7 @@
     "bn": "^1.0.5",
     "child-process": "^1.0.2",
     "cookie-parser": "^1.4.6",
+    "ed25519": "^0.0.5",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
     "number-to-bn": "^1.7.0"
@@ -19,6 +20,7 @@
   },
   "scripts": {
     "sidecar": "SAS_SUBSTRATE_URL=wss://rpc.ibp.network/polkadot  substrate-api-sidecar",
+    "sidecar-local": "SAS_SUBSTRATE_URL=ws://wigy.is-a-geek.org:9945 substrate-api-sidecar",
     "start": "node express/src/index.js",
     "watch": "nodemon  --signal SIGHUP express/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
