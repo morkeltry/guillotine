@@ -1,0 +1,18 @@
+[workspace]
+members = [
+    "node",
+    "pallets/probabilistic-payments",
+    "runtime",
+]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+authors = ["Mork <https://github.com/morkeltry>", "Wigy <https://github.com/wigy-opensource-developer>"]
+license = "MPL-2.0"
+homepage = "https://github.com/morkeltry/guillotine"
+repository = "https://github.com/morkeltry/guillotine"
+edition = "2021"
+
+[profile.release]
+panic = "unwind"
