@@ -5,6 +5,8 @@
   "main": "index.js",
   "type": "module",
   "dependencies": {
+    "@polkadot/api": "^10.11.1",
+    "@substrate/api-sidecar": "^17.3.2",
     "bn": "^1.0.5",
     "child-process": "^1.0.2",
     "cookie-parser": "^1.4.6",
@@ -16,6 +18,7 @@
     "nodemon": "^3.0.2"
   },
   "scripts": {
+    "sidecar": "SAS_SUBSTRATE_URL=wss://rpc.ibp.network/polkadot  substrate-api-sidecar",
     "start": "node express/src/index.js",
     "watch": "nodemon  --signal SIGHUP express/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"

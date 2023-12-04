@@ -1,4 +1,6 @@
-const peerCanPay = peer=> {};
+const peerCanPay = peer=> {
+    return true
+};
 
 export default { 
     peerCanPay
