@@ -1,7 +1,7 @@
-const { exec } = require("child_process");
-let server = require('./server');
+import { exec } from 'child_process';
+import server from './server.mjs'
 
-const port = app.get('port');
+const port = server.get('port');
 const delay = 500;
 let triesRemaining = 2;
 let nextTry;
@@ -9,7 +9,7 @@ let nextTry;
 
 const tryToListen = ()=> {
   if (triesRemaining--)
-    app.listen(port, () => {
+    server.listen(port, () => {
       console.log('App running on port', port);
       triesRemaining = 0;
     })
