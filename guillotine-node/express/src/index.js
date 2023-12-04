@@ -10,7 +10,7 @@ let nextTry;
 const tryToListen = ()=> {
   if (triesRemaining--)
     server.listen(port, () => {
-      console.log('App running on port', port);
+      console.log('Remote Guillotine node running on port', port);
       triesRemaining = 0;
     })
       .on('error', e=> {

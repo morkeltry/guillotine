@@ -15,18 +15,20 @@ const packAndSignVoucher = (voucherData, scheme)=> {
         nonce
     } = voucherData;
 
+    console.log({ voucherData });
+
     const keyring = new Keyring({ type: 'sr25519' });
     keyring.addFromUri(privKey);
-    voucherDataU8a = (oracleBlock<<12 + difficulty<<8 + noRedeemBeforeBlock<<4 + valueIfPaid).toU8a();
-    voucherDataU8a.concat(priceListCommit.toU8a()) ;
-    voucherDataU8a.concat(senderPubKey.toU8a()) ;
-    voucherDataU8a.concat(recipientPubKey.toU8a()) ;
-    voucherDataU8a.concat(nonce.toU8a()) ;
+    let voucherDataU8a = (oracleBlock<<12 + difficulty<<8 + noRedeemBeforeBlock<<4 + valueIfPaid).toU8a();
+    voucherDataU8a = voucherDataU8a.concat(priceListCommit.toU8a()) ;
+    voucherDataU8a = voucherDataU8a.concat(senderPubKey.toU8a()) ;
+    voucherDataU8a = voucherDataU8a.concat(recipientPubKey.toU8a()) ;
+    voucherDataU8a = voucherDataU8a.concat(nonce.toU8a()) ;
 
     const sig = keyring.sign(voucherDataU8a);
-    voucherDataU8a.concat(sig);
-    
+    voucherDataU8a = voucherDataU8a.concat(sig);
 
+    return voucherDataU8a;
 };
 
 export default packAndSignVoucher;
