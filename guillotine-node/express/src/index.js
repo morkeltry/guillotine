@@ -1,5 +1,5 @@
 import { exec } from 'child_process';
-import server from './server.mjs'
+import server from './server.js'
 
 const port = server.get('port');
 const delay = 500;

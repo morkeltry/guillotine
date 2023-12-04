@@ -2,7 +2,7 @@
   "name": "guillotine-server",
   "version": "1.0.0",
   "description": "",
-  "main": "index.mjs",
+  "main": "index.js",
   "type": "module",
   "dependencies": {
     "bn": "^1.0.5",
@@ -16,8 +16,8 @@
     "nodemon": "^3.0.2"
   },
   "scripts": {
-    "start": "node express/src/index.mjs",
-    "watch": "nodemon  --signal SIGHUP express/src/index.mjs",
+    "start": "node express/src/index.js",
+    "watch": "nodemon  --signal SIGHUP express/src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {

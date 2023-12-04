@@ -1,9 +1,9 @@
 import numberToBN from 'number-to-bn';
 import BN from 'bn';
 
-import peerCanPay from '../logic/index.mjs';
+import peerCanPay from '../logic/index.js';
 
-import * as constants from '../constants.mjs';
+import * as constants from '../constants.js';
 
 const { priceList, availableModules } = constants;
 

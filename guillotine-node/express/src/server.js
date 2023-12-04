@@ -1,7 +1,7 @@
 import express from 'express';
 import 'path';
 import cookieParser from 'cookie-parser';
-import openSession from'../openSession.mjs';
+import openSession from'../openSession.js';
 
 const server = express();
 
