@@ -1,0 +1,27 @@
+{
+  "name": "guillotine-server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "cookie-parser": "^1.4.6",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.2"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "watch": "nodemon  --signal SIGHUP src/index.js",
+    "noexpress": "nodemon  --signal SIGHUP src/expressless-proxy.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/morkeltry/guillotine.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://guillotine.xyz"
+}
