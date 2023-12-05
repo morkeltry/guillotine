@@ -3,9 +3,9 @@ import BN from 'bn';
 import { Keyring } from '@polkadot/keyring';
 import { u8aToHex } from '@polkadot/util';
 
-import peerCanPay from '../logic/index.js';
+import peerCanPay from '../../logic/index.js';
 
-import { constants } from '../constants.js';
+import { constants } from '../../constants.js';
 
 const { priceList, availableModules, rpcProviders } = constants;
 const { url }= rpcProviders[0];

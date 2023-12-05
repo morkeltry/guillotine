@@ -1,5 +1,5 @@
 
-import { Uint8Array, u8aToHex } from '@polkadot/util';
+import { u8aToHex } from '@polkadot/util';
 import packAndSignVoucher from '../helpers/packAndSignVoucher.js';
 
 const selfPubkey = "0xac30a749907f44e636a9fd2f46369f1e5af5b5e65ef08484526b47e78e892445";
@@ -42,3 +42,5 @@ const payPaymentRequest = async (session, paymentRequest, cache)=> {
 
     `${session.host}/completePayment/${nonce}/${voucher}`;
 }
+
+export { payPaymentRequest };

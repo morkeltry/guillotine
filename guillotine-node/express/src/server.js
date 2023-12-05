@@ -1,8 +1,7 @@
 import express from 'express';
 import 'path';
 import cookieParser from 'cookie-parser';
-import openSession from'../openSession.js';
-import completePayment from'../completePayment.js';
+import openSession from'./openSession.js';
 
 const server = express();
 
@@ -12,6 +11,5 @@ server.use(cookieParser());
 // server.use('/', proxy);
 
 server.get('/openSession', openSession.get);
-server.get('/completePayment/:nonce/:voucher', completePayment.get);
 
 export default server;

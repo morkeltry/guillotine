@@ -2,6 +2,7 @@
 import { Keyring } from '@polkadot/keyring';
 import { u8aToHex } from '@polkadot/util';
 
+import { constants } from '../constants.js';
 
 const { rpcProviders } = constants;
 const { url }= rpcProviders[0];
@@ -51,7 +52,7 @@ const forwardRequest = {
       .then (async response=>{
         console.log(response.headers, response.type, response.status);
         if ((response.headers._headers.paymentRequest)) {
-          const resPart2 = await payPaymentRequest(response.headers._headers.paymentRequest);
+          const resPart2 = await payPaymentRequest(session, response.headers._headers.paymentRequest);
           responseConcat (response, resPart2);
         }
         clientResponse.type('application/json');
@@ -67,4 +68,4 @@ const forwardRequest = {
   }
 }
 
-export default openSession;
+export default forwardRequest;

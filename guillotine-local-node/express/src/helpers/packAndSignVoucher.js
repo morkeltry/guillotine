@@ -1,5 +1,5 @@
 import { Keyring } from '@polkadot/keyring';
-import { Uint8Array, toU8a, u8aToHex } from '@polkadot/util';
+import { numberToU8a, u8aToHex } from '@polkadot/util';
 
 const packAndSignVoucher = (voucherData, scheme)=> {
     if (scheme !== 'sr25519')
