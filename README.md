@@ -29,7 +29,7 @@ Loginwall circumvented. Services provided. The people laugh and cry with joy.
 
 Payments:
 
-All payments are made as probablistic micropayments using 160 byte 'lottery vouchers', containing, in order:
+All payments are made as probablistic micropayments using 192 byte 'lottery vouchers', containing, in order:
 |offset|size|    Rust type  |    content    |
 |------|----|---------------| ------------- |
 |  0   | 4  |      u32      |  oracleBlock  |
@@ -38,7 +38,7 @@ All payments are made as probablistic micropayments using 160 byte 'lottery vouc
 | 12   | 4  |      u32      | valueIfPaid   |
 | 16   | 16 |      u128     | priceListCommit = Hash(stringification) % 2^128 |
 | 32   | 96 | bytes[32] [3] | [senderPubKey, recipientPubKey, nonce = Hash(Hash(url))]  |
-| 128  | 32 |   bytes[32]   | Sr25519Sig( ^bytes 0-127^ )  |
+| 128  | 64 |   bytes[64]   | Sr25519Sig( ^bytes 0-127^ )  |
 
 A difficulty of 1 implies P(payment) = 1
 A difficulty of 5000 means that, on average, only 1 in every 5000 vouchers can be paid out.
