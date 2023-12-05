@@ -1,5 +1,5 @@
 import numberToBN from 'number-to-bn';
-import BN from 'bn';
+import BN from 'bn.js';
 import { Keyring } from '@polkadot/keyring';
 import { u8aToHex } from '@polkadot/util';
 

@@ -14,7 +14,10 @@ const sesh = (selfPubkey.slice(selfPubkey.length-3)) ^ (remotePubkey.slice(remot
 const sidecarUrl = 'http://127.0.0.1:8080/';
 
 // const payPaymentRequest = async (session, paymentRequest, cache)=> {
-const payPaymentRequest = async (session = {selfPubkey:selfPubkey, remotePubkey:remotePubkey, sesh, difficulty:5000, priceListCommit:"0x88888888"} , paymentRequest, cache)=> {
+const payPaymentRequest = async (session = {
+        selfPubkey:selfPubkey, remotePubkey:remotePubkey, 
+        sesh, difficulty:5000, priceListCommit:blake2AsHex(JSON.stringify("[{abc:123}, {def:678}]")) 
+    } , paymentRequest, cache)=> {
     const { selfPubkey, remotePubKey, sesh, difficulty, priceListCommit  } = session;
     const valueIfPaid = paymentRequest.amountRequested   ||12345;
     const { url } = cache || {url:'http:/blah.bla'};
