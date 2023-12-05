@@ -1,4 +1,4 @@
-use frame_support::assert_ok;
+use frame_support::{assert_ok, pallet_prelude::*};
 use hex_literal::hex;
 use sp_core::{bounded::TryCollect, sr25519, Decode, Pair, H256};
 use sp_runtime::{codec::Encode, traits::IdentifyAccount, MultiSigner};
@@ -14,46 +14,51 @@ fn claim_works_for_given_values() {
 		let alice_pub: MultiSigner = alice.public().into();
 		let bob_pub: MultiSigner = bob.public().into();
 
+		// We need a RandomnessHistory entry for the oracle block
+		System::set_block_number(1);
+		<InsecureRandomnessCollectiveFlip as Hooks<_>>::on_initialize(1);
+		<ProbabilisticPayments as Hooks<_>>::on_initialize(1);
+
 		// Needs to be past the
 		System::set_block_number(10);
 
-		let mut unsigned_token_bytes = vec![];
+		let mut unsigned_voucher_bytes = vec![];
 		// oracle_block
-		unsigned_token_bytes.extend_from_slice(&1u32.encode());
+		unsigned_voucher_bytes.extend_from_slice(&1u32.encode());
 		// difficulty
-		unsigned_token_bytes.extend_from_slice(&2u32.encode());
+		unsigned_voucher_bytes.extend_from_slice(&2u32.encode());
 		// no_redeem_before_block
-		unsigned_token_bytes.extend_from_slice(&3u32.encode());
+		unsigned_voucher_bytes.extend_from_slice(&3u32.encode());
 		// value_if_paid
-		unsigned_token_bytes.extend_from_slice(&4u32.encode());
+		unsigned_voucher_bytes.extend_from_slice(&4u32.encode());
 		// price_list_commit
-		unsigned_token_bytes.extend(hex!("fedcba98765432100123456789abcdef"));
+		unsigned_voucher_bytes.extend(hex!("fedcba98765432100123456789abcdef"));
 		// sender_pk
-		unsigned_token_bytes.extend_from_slice(&bob_pub.clone().into_account().encode());
+		unsigned_voucher_bytes.extend_from_slice(&bob_pub.clone().into_account().encode());
 		// recipient_pk
-		unsigned_token_bytes.extend_from_slice(&alice_pub.clone().into_account().encode());
+		unsigned_voucher_bytes.extend_from_slice(&alice_pub.clone().into_account().encode());
 		// nonce
-		unsigned_token_bytes.extend_from_slice(&H256::default().encode());
+		unsigned_voucher_bytes.extend_from_slice(&H256::default().encode());
 
-		let test_signature = bob.sign(&unsigned_token_bytes).encode();
-		let token_bytes =
-			unsigned_token_bytes.iter().chain(&test_signature).cloned().collect::<Vec<_>>();
+		let test_signature = bob.sign(&unsigned_voucher_bytes).encode();
+		let voucher_bytes =
+			unsigned_voucher_bytes.iter().chain(&test_signature).cloned().collect::<Vec<_>>();
 
 		println!(
 			"{}+{}: {}",
-			unsigned_token_bytes.len(),
+			unsigned_voucher_bytes.len(),
 			test_signature.len(),
-			hex::encode(&token_bytes)
+			hex::encode(&voucher_bytes)
 		);
 		// Dispatch a signed extrinsic.
 		assert_ok!(ProbabilisticPayments::claim(
 			RuntimeOrigin::signed(alice_pub.clone().into_account()),
-			token_bytes.into_iter().try_collect().unwrap()
+			voucher_bytes.into_iter().try_collect().unwrap()
 		));
 
 		// Assert that the correct event was deposited
 		System::assert_last_event(
-			Event::TokenClaimed { value: 4, who: alice_pub.into_account() }.into(),
+			Event::VoucherClaimed { value: 4, who: alice_pub.into_account() }.into(),
 		);
 	});
 }
@@ -72,7 +77,7 @@ fn claim_works_for_test_vector() {
 	new_test_ext().execute_with(|| {
 		let _sender_pub = <sr25519::Public as Decode>::decode(&mut &hex!("d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d")[..]).unwrap();
 		let recipient_pub = <sr25519::Public as Decode>::decode(&mut &hex!("d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d")[..]).unwrap();
-		let token_bytes: [u8; 192] = hex!("
+		let voucher_bytes: [u8; 192] = hex!("
 			00001800
 			00001388
 			65682048
@@ -86,12 +91,12 @@ fn claim_works_for_test_vector() {
 		System::set_block_number(u32::from_le_bytes(hex!("65682048")) + 1);
 
 		assert_ok!(ProbabilisticPayments::claim(
-			RuntimeOrigin::signed(recipient_pub.clone().into()),
-			token_bytes.into_iter().try_collect().unwrap()
+			RuntimeOrigin::signed(recipient_pub.into()),
+			voucher_bytes.into_iter().try_collect().unwrap()
 		));
 		
 		System::assert_last_event(
-			Event::TokenClaimed { value: 4, who: recipient_pub.into() }.into(),
+			Event::VoucherClaimed { value: 4, who: recipient_pub.into() }.into(),
 		);
 	});
 }

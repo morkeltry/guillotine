@@ -5182,7 +5182,7 @@ dependencies = [
  "frame-system",
  "hex",
  "hex-literal",
- "log",
+ "pallet-insecure-randomness-collective-flip",
  "parity-scale-codec",
  "scale-info",
  "sp-core",

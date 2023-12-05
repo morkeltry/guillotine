@@ -15,6 +15,7 @@ frame_support::construct_runtime!(
 	{
 		System: frame_system,
 		ProbabilisticPayments: pallet_probabilistic_payments,
+		InsecureRandomnessCollectiveFlip: pallet_insecure_randomness_collective_flip, 
 	}
 );
 
@@ -50,6 +51,8 @@ impl pallet_probabilistic_payments::Config for Test {
 	type BlockNumber = u32;
 	type WeightInfo = ();
 }
+
+impl pallet_insecure_randomness_collective_flip::Config for Test {}
 
 // Build genesis storage according to the mock runtime.
 pub fn new_test_ext() -> sp_io::TestExternalities {
