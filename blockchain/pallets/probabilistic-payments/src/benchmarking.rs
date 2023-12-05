@@ -3,11 +3,9 @@
 use frame_benchmarking::v2::*;
 use frame_system::RawOrigin;
 
-
 #[allow(unused)]
-use crate::Pallet as Template;
+use crate::Pallet as ProbabilisticPayments;
 
-#![cfg(feature = "runtime-benchmarks")]
 use super::*;
 
 #[benchmarks]
@@ -15,27 +13,17 @@ mod benchmarks {
 	use super::*;
 
 	#[benchmark]
-	fn do_something() {
-		let value = 100u32.into();
+	fn claim() {
+		let token = BoundedVec::<_, _>::default();
 		let caller: T::AccountId = whitelisted_caller();
 
 		#[extrinsic_call]
-		do_something(RawOrigin::Signed(caller), value);
-
-		assert_eq!(Something::<T>::get(), Some(value));
+		claim(RawOrigin::Signed(caller), token);
 	}
 
-	#[benchmark]
-	fn cause_error() {
-		Something::<T>::put(100u32);
-
-		let caller: T::AccountId = whitelisted_caller();
-
-		#[extrinsic_call]
-		cause_error(RawOrigin::Signed(caller));
-
-		assert_eq!(Something::<T>::get(), Some(101u32));
-	}
-
-	impl_benchmark_test_suite!(Template, crate::mock::new_test_ext(), crate::mock::Test);
+	impl_benchmark_test_suite!(
+		ProbabilisticPayments,
+		crate::mock::new_test_ext(),
+		crate::mock::Test
+	);
 }

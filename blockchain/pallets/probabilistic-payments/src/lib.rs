@@ -1,8 +1,5 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 
-/// Edit this file to define custom logic or remove it if it is not needed.
-/// Learn more about FRAME and the core library of Substrate FRAME pallets:
-/// <https://docs.substrate.io/reference/frame-pallets/>
 pub use pallet::*;
 
 #[cfg(test)]
@@ -16,11 +13,76 @@ mod benchmarking;
 pub mod weights;
 pub use weights::*;
 
+use frame_support::{pallet_prelude::*, parameter_types};
+use frame_system::pallet_prelude::*;
+use sp_core::{sr25519, H256};
+use sp_runtime::traits::{IdentifyAccount, Verify};
+
+parameter_types! {
+	pub MaxTokenLength: u32 = 256;
+}
+
+pub struct Token<Signature: Verify>
+where
+	Signature: Verify + Parameter + From<sr25519::Signature>,
+	<Signature::Signer as IdentifyAccount>::AccountId: Parameter,
+{
+	pub oracle_block: u32,
+	pub difficulty: u32,
+	pub no_redeem_before_block: u32,
+	pub value_if_paid: u32,
+	pub price_list_commit: u128,
+	pub sender_pk: <Signature::Signer as IdentifyAccount>::AccountId,
+	pub recipient_pk: <Signature::Signer as IdentifyAccount>::AccountId,
+	/// h(h(url)), but the runtime does not need to know
+	pub nonce: H256,
+	pub signature: Signature,
+}
+
+impl<Signature> Token<Signature>
+where
+	Signature: Verify + Parameter + From<sr25519::Signature>,
+	<Signature::Signer as IdentifyAccount>::AccountId: Parameter,
+{
+	pub fn parse(token: &[u8]) -> Result<Self, u8> {
+		if token.len() < 192 {
+			return Err(0);
+		}
+		let oracle_block = u32::from_le_bytes(token[0..4].try_into().unwrap());
+		let difficulty = u32::from_le_bytes(token[4..8].try_into().unwrap());
+		let no_redeem_before_block = u32::from_le_bytes(token[8..12].try_into().unwrap());
+		let value_if_paid = u32::from_le_bytes(token[12..16].try_into().unwrap());
+		let price_list_commit = u128::from_le_bytes(token[16..32].try_into().unwrap());
+		let sender_pk = <<Signature::Signer as IdentifyAccount>::AccountId as Decode>::decode(
+			&mut &token[32..64],
+		)
+		.map_err(|_e| 1)?;
+		let recipient_pk = <<Signature::Signer as IdentifyAccount>::AccountId as Decode>::decode(
+			&mut &token[64..96],
+		)
+		.map_err(|_e| 2)?;
+		let nonce = H256::from_slice(&token[96..128]);
+		let signature = <sr25519::Signature as Decode>::decode(&mut &token[128..192])
+			.map_err(|_e| 3)?
+			.into();
+
+		Ok(Self {
+			oracle_block,
+			difficulty,
+			no_redeem_before_block,
+			value_if_paid,
+			price_list_commit,
+			sender_pk,
+			recipient_pk,
+			nonce,
+			signature,
+		})
+	}
+}
+
 #[frame_support::pallet]
 pub mod pallet {
 	use super::*;
-	use frame_support::pallet_prelude::*;
-	use frame_system::pallet_prelude::*;
 
 	#[pallet::pallet]
 	pub struct Pallet<T>(_);
@@ -30,6 +92,10 @@ pub mod pallet {
 	pub trait Config: frame_system::Config {
 		/// Because this pallet emits events, it depends on the runtime's definition of an event.
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+
+		type Signature: Verify + From<sr25519::Signature>;
+
+		type BlockNumber: From<u32>;
 
 		/// Type representing the weight of this pallet
 		type WeightInfo: WeightInfo;
@@ -48,66 +114,63 @@ pub mod pallet {
 	#[pallet::event]
 	#[pallet::generate_deposit(pub(super) fn deposit_event)]
 	pub enum Event<T: Config> {
-		/// Event documentation should end with an array that provides descriptive names for event
-		/// parameters. [something, who]
-		SomethingStored { something: u32, who: T::AccountId },
+		/// A token was claimed successfully. [value, who]
+		TokenClaimed { value: u32, who: T::AccountId },
 	}
 
 	// Errors inform users that something went wrong.
 	#[pallet::error]
 	pub enum Error<T> {
-		/// Error names should be descriptive.
-		NoneValue,
-
-		/// Errors should have helpful documentation associated with them.
-		StorageOverflow,
+		/// Token cannot be parsed from the given amount of bytes.
+		InvalidToken(u8),
+		/// Only the recipient of the token can claim the value.
+		InvalidRecipient,
+		/// The token is not signed by the sender properly.
+		InvalidTokenSignature,
+		/// The token cannot be claimed yet.
+		TooSoon,
 	}
 
 	// Dispatchable functions allows users to interact with the pallet and invoke state changes.
 	// These functions materialize as "extrinsics", which are often compared to transactions.
 	// Dispatchable functions must be annotated with a weight and must return a DispatchResult.
 	#[pallet::call]
-	impl<T: Config> Pallet<T> {
+	impl<T: Config> Pallet<T>
+	where
+		<T as Config>::Signature: Parameter,
+		<<<T as Config>::Signature as Verify>::Signer as IdentifyAccount>::AccountId: Parameter,
+		<<<T as Config>::Signature as Verify>::Signer as IdentifyAccount>::AccountId:
+			core::cmp::PartialEq<<T as frame_system::Config>::AccountId>,
+		BlockNumberFor<T>: core::cmp::PartialOrd<u32>,
+	{
 		/// An example dispatchable that takes a singles value as a parameter, writes the value to
 		/// storage and emits an event. This function must be dispatched by a signed extrinsic.
 		#[pallet::call_index(0)]
-		#[pallet::weight(T::WeightInfo::do_something())]
-		pub fn do_something(origin: OriginFor<T>, something: u32) -> DispatchResult {
-			// Check that the extrinsic was signed and get the signer.
-			// This function will return an error if the extrinsic is not signed.
-			// https://docs.substrate.io/main-docs/build/origins/
+		#[pallet::weight(T::WeightInfo::claim())]
+		pub fn claim(
+			origin: OriginFor<T>,
+			token: BoundedVec<u8, MaxTokenLength>,
+		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 
-			// Update storage.
-			<Something<T>>::put(something);
+			let tkn = Token::<<T as Config>::Signature>::parse(token.as_ref())
+				.map_err(|c| Error::<T>::InvalidToken(c))?;
 
-			// Emit an event.
-			Self::deposit_event(Event::SomethingStored { something, who });
+			ensure!(tkn.recipient_pk == who, Error::<T>::InvalidRecipient);
+			ensure!(
+				<frame_system::Pallet<T>>::block_number() >= tkn.no_redeem_before_block,
+				Error::<T>::TooSoon
+			);
+
+			ensure!(
+				tkn.signature.verify(&AsRef::<[_]>::as_ref(&token)[0..128], &tkn.sender_pk),
+				Error::<T>::InvalidTokenSignature
+			);
+
+			Self::deposit_event(Event::TokenClaimed { value: tkn.value_if_paid, who });
 
 			// Return a successful DispatchResultWithPostInfo
 			Ok(())
-		}
-
-		/// An example dispatchable that may throw a custom error.
-		#[pallet::call_index(1)]
-		#[pallet::weight(T::WeightInfo::cause_error())]
-		pub fn cause_error(origin: OriginFor<T>) -> DispatchResult {
-			let _who = ensure_signed(origin)?;
-
-			// Read a value from storage.
-			match <Something<T>>::get() {
-				// Return an error if the value has not been set.
-				None => return Err(Error::<T>::NoneValue.into()),
-				Some(old) => {
-					// Increment the value read from storage; will error in the event of overflow.
-					let new = old.checked_add(1).ok_or(Error::<T>::StorageOverflow)?;
-
-					// Update the value in storage with the incremented result.
-					<Something<T>>::put(new);
-
-					Ok(())
-				},
-			}
 		}
 	}
 }

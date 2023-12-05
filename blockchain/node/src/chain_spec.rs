@@ -1,6 +1,6 @@
 use guillotine_chain_runtime::{
-	opaque::SessionKeys, AccountId, AuraConfig, BalancesConfig, GrandpaConfig,
-	RuntimeGenesisConfig, Signature, SudoConfig, SystemConfig, WASM_BINARY,
+	AccountId, AuraConfig, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, Signature,
+	SudoConfig, SystemConfig, WASM_BINARY,
 };
 use sc_service::{ChainType, Properties};
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;

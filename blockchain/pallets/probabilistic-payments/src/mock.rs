@@ -1,20 +1,20 @@
-use frame_support::traits::{ConstU16, ConstU64};
+use frame_support::traits::{ConstU16, ConstU32};
 use sp_core::H256;
 use sp_runtime::{
-	traits::{BlakeTwo256, IdentityLookup},
-	BuildStorage,
+	traits::{BlakeTwo256, IdentifyAccount, IdentityLookup, Verify},
+	BuildStorage, MultiSignature,
 };
 
-use crate as pallet_template;
+use crate as pallet_probabilistic_payments;
 
-type Block = frame_system::mocking::MockBlock<Test>;
+type Block = frame_system::mocking::MockBlockU32<Test>;
 
 // Configure a mock runtime to test the pallet.
 frame_support::construct_runtime!(
 	pub enum Test
 	{
 		System: frame_system,
-		TemplateModule: pallet_template,
+		ProbabilisticPayments: pallet_probabilistic_payments,
 	}
 );
 
@@ -28,11 +28,11 @@ impl frame_system::Config for Test {
 	type Nonce = u64;
 	type Hash = H256;
 	type Hashing = BlakeTwo256;
-	type AccountId = u64;
+	type AccountId = <<MultiSignature as Verify>::Signer as IdentifyAccount>::AccountId;
 	type Lookup = IdentityLookup<Self::AccountId>;
 	type Block = Block;
 	type RuntimeEvent = RuntimeEvent;
-	type BlockHashCount = ConstU64<250>;
+	type BlockHashCount = ConstU32<250>;
 	type Version = ();
 	type PalletInfo = PalletInfo;
 	type AccountData = ();
@@ -41,11 +41,13 @@ impl frame_system::Config for Test {
 	type SystemWeightInfo = ();
 	type SS58Prefix = ConstU16<42>;
 	type OnSetCode = ();
-	type MaxConsumers = frame_support::traits::ConstU32<16>;
+	type MaxConsumers = ConstU32<16>;
 }
 
-impl pallet_template::Config for Test {
+impl pallet_probabilistic_payments::Config for Test {
 	type RuntimeEvent = RuntimeEvent;
+	type Signature = MultiSignature;
+	type BlockNumber = u32;
 	type WeightInfo = ();
 }
 

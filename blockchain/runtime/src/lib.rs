@@ -340,6 +340,13 @@ parameter_types! {
 
 impl pallet_insecure_randomness_collective_flip::Config for Runtime {}
 
+impl pallet_probabilistic_payments::Config for Runtime {
+	type RuntimeEvent = RuntimeEvent;
+	type Signature = Signature;
+	type BlockNumber = BlockNumber;
+	type WeightInfo = pallet_probabilistic_payments::weights::SubstrateWeight<Runtime>;
+}
+
 parameter_types! {
 	pub const StakingUnsignedPriority: TransactionPriority = TransactionPriority::max_value() / 2;
 	pub const MaxAuthorities: u32 = 100;
@@ -412,6 +419,7 @@ construct_runtime!(
 		Sudo: pallet_sudo,
 		Nfts: pallet_nfts,
 		InsecureRandomnessCollectiveFlip: pallet_insecure_randomness_collective_flip,
+		ProbabilisticPayments: pallet_probabilistic_payments,
 	}
 );
 
