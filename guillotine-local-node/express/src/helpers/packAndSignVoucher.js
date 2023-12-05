@@ -2,6 +2,7 @@ import { Keyring } from '@polkadot/keyring';
 import { BN } from 'bn.js';
 import { numberToU8a, bnToU8a, u8aToHex, hexToU8a } from '@polkadot/util';
 import { blake2AsHex } from '@polkadot/util-crypto';
+import { log } from 'console';
 
 const packAndSignVoucher = (voucherData, scheme)=> {
     if (scheme !== 'sr25519')
@@ -19,8 +20,11 @@ const packAndSignVoucher = (voucherData, scheme)=> {
 
     console.log({ voucherData });
 
-    const keyring = new Keyring({ type: 'sr25519' });
-    keyring.addFromUri('0x3cffa91e3c1e6a1e900d6f9e44bc35b5c99a3a427f267c39cf91a57b359e1e66' || privKey);
+    const keyring = new Keyring({ type: 'sr25519', ss58Format: 42 });
+    console.log(keyring);
+    const signer = keyring.addFromUri('0x3cffa91e3c1e6a1e900d6f9e44bc35b5c99a3a427f267c39cf91a57b359e1e66' || privKey);
+
+    console.log(keyring);
     
     let voucherDataU8a = new Uint8Array(192);
     voucherDataU8a.set(hexToU8a(
@@ -35,8 +39,8 @@ const packAndSignVoucher = (voucherData, scheme)=> {
     voucherDataU8a.set(hexToU8a(nonce), 96) ;
     console.log(voucherDataU8a);
 
-    const sig = keyring.sign(voucherDataU8a);
-    voucherDataU8a = voucherDataU8a.concat(sig);
+    const sig = signer.sign(voucherDataU8a);
+    voucherDataU8a.set(sig, 128);
 
     return voucherDataU8a;
 };
