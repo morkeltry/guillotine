@@ -27,7 +27,7 @@ Loginwall circumvented. Services provided. The people laugh and cry with joy.
 
 
 
-Payments:
+#### Payments:
 
 All payments are made as probablistic micropayments using 192 byte 'lottery vouchers', containing, in order:
 |offset|size|    Rust type  |    content    |
