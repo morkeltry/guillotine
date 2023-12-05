@@ -17,17 +17,15 @@ const DIFFICULTY = 1000;
 const selfPubkey = "0xd254f9eacdeb86b9c317cab95eb742d2fdccc14ce177542ff4c111642aeb862a";
 const randomFundedAccount = "5EUZnHD5NcheWyLjpAD1GwvQv7CBELpEsVvCmXyQrhnDkvss";
 const AliceAddy = "5GrwvaEF5zXb26Fz9rcQpDWS57CtERHpNehXCPcNoHGKutQY";
-const peerPubkey = "0xac30a749907f44e636a9fd2f46369f1e5af5b5e65ef08484526b47e78e892445";
-
-
+const peerPubkey = "0x8eaf04151687736326c9fea17e25fc5287613693c912909cb226aa4794f26a48"
 
 
 const completePayment = {
   get : async (req, res) => {
-    const { nonce, voucher } = req.params;
+    const { sesh, voucher } = req.params;
     
     // arbitary params V to get it running through..
-    payPaymentRequest (undefined, nonce)
+    payPaymentRequest (undefined, sesh)
       .then (results=>{
         res.type('application/json');
         res.status(200);

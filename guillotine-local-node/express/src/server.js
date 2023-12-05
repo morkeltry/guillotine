@@ -12,6 +12,6 @@ server.use(cookieParser());
 // server.use('/', proxy);
 
 server.use('/request', forwardRequest.get);
-server.get('/completePayment/:nonce/:voucher', completePayment.get);
+server.get('/completePayment/:sesh/:voucher', completePayment.get);
 
 export default server;
