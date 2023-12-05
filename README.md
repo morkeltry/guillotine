@@ -41,6 +41,7 @@ All payments are made as probablistic micropayments using 192 byte 'lottery vouc
 | 128  | 64 |   bytes[64]   | Sr25519Sig( ^bytes 0-127^ )  |
 
 A difficulty of 1 implies P(payment) = 1
+
 A difficulty of 5000 means that, on average, only 1 in every 5000 vouchers can be paid out.
 
 
