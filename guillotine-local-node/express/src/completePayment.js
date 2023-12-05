@@ -24,9 +24,10 @@ const peerPubkey = "0xac30a749907f44e636a9fd2f46369f1e5af5b5e65ef08484526b47e78e
 
 const completePayment = {
   get : async (req, res) => {
-    const { params } = req;
-    console.log(params, 'params');
-    newSession (params)
+    const { nonce, voucher } = req.params;
+    
+    // arbitary params V to get it running through..
+    payPaymentRequest (undefined, nonce)
       .then (results=>{
         res.type('application/json');
         res.status(200);

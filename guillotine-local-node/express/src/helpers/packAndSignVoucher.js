@@ -1,5 +1,6 @@
 import { Keyring } from '@polkadot/keyring';
-import { numberToU8a, u8aToHex } from '@polkadot/util';
+import { BN } from 'bn.js';
+import { numberToU8a, bnToU8a, u8aToHex } from '@polkadot/util';
 
 const packAndSignVoucher = (voucherData, scheme)=> {
     if (scheme !== 'sr25519')
@@ -18,7 +19,7 @@ const packAndSignVoucher = (voucherData, scheme)=> {
     console.log({ voucherData });
 
     const keyring = new Keyring({ type: 'sr25519' });
-    keyring.addFromUri(privKey);
+    keyring.addFromUri('0x3cffa91e3c1e6a1e900d6f9e44bc35b5c99a3a427f267c39cf91a57b359e1e66' || privKey);
     let voucherDataU8a = (oracleBlock<<12 + difficulty<<8 + noRedeemBeforeBlock<<4 + valueIfPaid).toU8a();
     voucherDataU8a = voucherDataU8a.concat(priceListCommit.toU8a()) ;
     voucherDataU8a = voucherDataU8a.concat(senderPubKey.toU8a()) ;
